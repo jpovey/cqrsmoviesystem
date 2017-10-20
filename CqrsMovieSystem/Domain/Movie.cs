@@ -12,7 +12,7 @@ namespace CqrsMovieSystem.Domain
 
         public Movie()
         {
-            
+
         }
 
         public void ApplyEvent(Event @event)
@@ -46,7 +46,7 @@ namespace CqrsMovieSystem.Domain
         {
             if (AvaliableSeats < seatsToBook)
             {
-               return;
+                return;
             }
 
             var seatsBooked = new SeatsBooked(seatsToBook);

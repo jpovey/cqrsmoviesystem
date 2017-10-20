@@ -7,6 +7,7 @@ namespace CqrsMovieSystem.Domain
     {
         public readonly List<Event> Changes = new List<Event>();
         public abstract string Id { get; }
+        public int EventIndex { get; set; }
 
         public void ApplyChange(Event @event)
         {
@@ -16,11 +17,23 @@ namespace CqrsMovieSystem.Domain
         private void ApplyChange(Event @event, bool isNew)
         {
             this.Apply(@event);
-            if (isNew) Changes.Add(@event);
+            if (isNew)
+            {
+                Changes.Add(@event);
+            }
         }
 
         private void Apply(Event @event)
         {
+            if (@event.Index == 0)
+            {
+                @event.Index = EventIndex + 1;
+            }
+            else
+            {
+                EventIndex = @event.Index;
+            }
+
             dynamic aggregate = this;
             aggregate.ApplyEvent(@event);
         }

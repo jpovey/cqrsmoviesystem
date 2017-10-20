@@ -4,6 +4,7 @@
     using CqrsMovieSystem.Commands;
     using CqrsMovieSystem.Handlers;
     using CqrsMovieSystem.Repositories;
+    using CqrsMovieSystem.Snapshot;
     using CqrsMovieSystem.Views;
     using NUnit.Framework;
 
@@ -12,6 +13,7 @@
     {
         private MovieHandler _movieHandler;
         private Views _views;
+        private SnapshotGenerator _snapshotGenerator;
 
         [SetUp]
         public void Setup()
@@ -28,6 +30,7 @@
 
             _movieHandler = new MovieHandler(repository);
             _views = new Views(repository);
+            _snapshotGenerator = new SnapshotGenerator(repository);
         }
 
         [Test]
@@ -78,6 +81,33 @@
             // How many seats booked
             var seatsBooked = _views.GetSeatsBookedFor(movieId);
             Assert.AreEqual(seatsBooked, 6);
+
+            // Create a snapshot
+             _snapshotGenerator.SnapshotMovieAggregate(movieId);
+
+            // Get events from snapshot aggregate
+            seatsBooked = _views.GetSeatsBookedFor(movieId);
+            Assert.AreEqual(seatsBooked, 6);
+
+            // Book 1 seats
+            var bookOneSeatCommand = new BookSeats
+            {
+                MovieId = movieId,
+                Seats = 1
+            };
+            movie = _movieHandler.Handle(bookOneSeatCommand);
+            Assert.AreEqual(movie.AvaliableSeats, 3);
+
+            // Book 1 seats
+            movie = _movieHandler.Handle(bookOneSeatCommand);
+            Assert.AreEqual(movie.AvaliableSeats, 2);
+
+            // Create a new snapshot
+            _snapshotGenerator.SnapshotMovieAggregate(movieId);
+
+            // Book 1 seats
+            movie = _movieHandler.Handle(bookOneSeatCommand);
+            Assert.AreEqual(movie.AvaliableSeats, 1);
         }
     }
 }

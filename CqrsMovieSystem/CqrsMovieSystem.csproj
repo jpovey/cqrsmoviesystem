@@ -62,6 +62,7 @@
     <Compile Include="Repositories\EventStoreData.cs" />
     <Compile Include="Repositories\EventStoreRepository.cs" />
     <Compile Include="Repositories\RepositoryConfig.cs" />
+    <Compile Include="Snapshot\SnapshotGenerator.cs" />
     <Compile Include="Views\Views.cs" />
   </ItemGroup>
   <ItemGroup>
